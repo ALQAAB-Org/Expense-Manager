@@ -1,0 +1,1900 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Manager</title>
+    <script src="./Assets/js/chart.js"></script>
+    <script src="./Assets/js/all.min.js"></script>
+    <link rel="stylesheet" href="./Assets/css/all.min.css">
+    <link rel="icon" href="./July_2025 Kaaj Button/favicon-102x102.png" type="image/png" sizes="102x102">
+    <style>
+        /* Light Mode Variables (Default) */
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #fca311;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --border-color: #ddd;
+            --border-radius: 10px;
+            --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+            --card-gradient: linear-gradient(135deg, #4361ee 0%, #7209b7 100%);
+        }
+
+        /* Dark Mode Variable Overrides */
+        .dark-mode {
+            --primary: #4895ef;
+            --primary-dark: #3a7bd0;
+            --secondary: #9d4edd;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #fca311;
+            --light: #1e1e1e;
+            --dark: #f0f0f0;
+            --gray: #a0a0a0;
+            --light-gray: #0d0d0d;
+            --border-color: #444;
+            --box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --card-gradient: linear-gradient(135deg, #3a56d4 0%, #6a0dad 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: var(--transition);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 25px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary);
+            background: var(--light);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h1 {
+    font-size: 1.8rem;
+    background: var(--card-gradient);
+    
+    /* Standard property pehle likhein (for Firefox, etc.) */
+    background-clip: text;
+    -webkit-background-clip: text;
+    
+    /* Text transparent karne ke liye */
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    
+    font-weight: 700;
+}
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle, .reset-btn, .backup-btn, .report-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+
+        .reset-btn {
+            background: var(--danger);
+        }
+
+        .backup-btn {
+            background: var(--success);
+        }
+
+        .report-btn {
+            background: var(--secondary);
+        }
+
+        .theme-toggle:hover, .reset-btn:hover, .backup-btn:hover, .report-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .income-card .value {
+            color: var(--success);
+        }
+
+        .expense-card .value {
+            color: var(--danger);
+        }
+
+        .balance-card .value {
+            color: var(--primary);
+        }
+
+        .savings-card .value {
+            color: #9d4edd;
+        }
+
+        .form-section, .controls, .entries-section, .trash-section, .backup-section, .chart-container {
+            background: var(--light);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+        }
+        
+        .form-section { border-top: 4px solid var(--secondary); }
+        .entries-section { border-top: 4px solid var(--warning); }
+        .trash-section { border-top: 4px solid var(--danger); }
+        .backup-section { border-top: 4px solid var(--success); }
+
+        .form-section h2, .entries-section h2, .charts-section h2, .trash-section h2, .backup-section h2 {
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .form-group input, 
+        .form-group select,
+        .form-group textarea,
+        .search-bar input {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--light-gray);
+            color: var(--dark);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .dark-mode .form-group input, 
+        .dark-mode .form-group select,
+        .dark-mode .form-group textarea,
+        .dark-mode .search-bar input {
+            background: #2c2c2c;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus,
+        .form-group textarea:focus,
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-secondary { background: var(--secondary); color: white; }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 8px;
+        }
+
+        .search-bar input {
+            width: 250px;
+            padding: 11px 16px;
+        }
+
+        .entries-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .entries-table th {
+            text-align: left;
+            padding: 14px;
+            border-bottom: 2px solid var(--border-color);
+            color: var(--gray);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .entries-table td {
+            padding: 14px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .income-row {
+            background-color: rgba(76, 201, 240, 0.1);
+            border-left: 4px solid var(--success);
+        }
+
+        .expense-row {
+            background-color: rgba(247, 37, 133, 0.1);
+            border-left: 4px solid var(--danger);
+        }
+
+        .savings-row {
+            background-color: rgba(157, 78, 221, 0.1);
+            border-left: 4px solid #9d4edd;
+        }
+        
+        .dark-mode .income-row { background-color: rgba(76, 201, 240, 0.07); }
+        .dark-mode .expense-row { background-color: rgba(247, 37, 133, 0.07); }
+        .dark-mode .savings-row { background-color: rgba(157, 78, 221, 0.07); }
+
+        .action-cell {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 7px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+        }
+
+        .edit-btn { background: var(--warning); color: white; }
+        .delete-btn { background: var(--danger); color: white; }
+        .restore-btn { background: var(--success); color: white; }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        .trash-toggle {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .trash-content {
+            display: none;
+        }
+
+        .trash-content.show {
+            display: block;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 35px;
+            color: var(--gray);
+            font-style: italic;
+            background: rgba(0,0,0,0.02);
+            border-radius: var(--border-radius);
+        }
+
+        .entry-category {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .main-category {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background-color: rgba(67, 97, 238, 0.15);
+            color: #4361ee;
+        }
+
+        .category-salary { background-color: rgba(76, 201, 240, 0.15); color: #4cc9f0; }
+        .category-soft-food { background-color: rgba(106, 176, 76, 0.15); color: #6ab04c; }
+        .category-hard-food { background-color: rgba(252, 163, 17, 0.15); color: #fca311; }
+        .category-home { background-color: rgba(114, 9, 183, 0.15); color: #7209b7; }
+        .category-health { background-color: rgba(67, 97, 238, 0.15); color: #4361ee; }
+        .category-transport { background-color: rgba(247, 37, 133, 0.15); color: #f72585; }
+        .category-entertainment { background-color: rgba(155, 81, 224, 0.15); color: #9b51e0; }
+        .category-gadgets { background-color: rgba(45, 156, 219, 0.15); color: #2d9cdb; }
+        .category-other { background-color: rgba(153, 153, 153, 0.15); color: #999; }
+
+        .type-badge {
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .income-badge { background-color: rgba(76, 201, 240, 0.15); color: #4cc9f0; }
+        .expense-badge { background-color: rgba(247, 37, 133, 0.15); color: #f72585; }
+        .savings-badge { background-color: rgba(157, 78, 221, 0.15); color: #9d4edd; }
+
+        .backup-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-cell {
+            width: 35px;
+            text-align: center;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 18px;
+            gap: 6px;
+        }
+        
+        .pagination-btn {
+            padding: 7px 14px;
+            background-color: var(--light);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .pagination-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px 0;
+            color: var(--gray);
+            margin-top: 35px;
+            border-top: 1px solid var(--primary);
+            font-size: 0.85rem;
+            background: var(--light);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        @media (max-width: 768px) {
+            .charts-section { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .search-bar input { width: 100%; }
+            .controls { flex-direction: column; }
+            .filters { flex-direction: column; }
+            .entries-table { display: block; overflow-x: auto; }
+            header { flex-direction: column; gap: 15px; text-align: center; }
+            .header-actions { width: 100%; justify-content: center; }
+            .backup-actions { flex-direction: column; }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .card .value { font-size: 1.8rem; }
+            .action-cell { flex-direction: column; }
+            h1 { font-size: 1.6rem; }
+            .charts-section { grid-template-columns: 1fr; }
+            .chart-wrapper { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+    <i class="fas fa-money-bill-wave fa-2x" 
+       style="background: var(--card-gradient); 
+              background-clip: text;
+              -webkit-background-clip: text;
+              color: transparent;
+              -webkit-text-fill-color: transparent;"></i>
+    <h1>Expense Manager</h1>
+</div>
+            <div class="header-actions">
+                <button id="resetAll" class="reset-btn">
+                    <i class="fas fa-redo"></i> Reset Data
+                </button>
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+                <button class="report-btn" id="generateReport">
+                    <i class="fas fa-file-alt"></i> Generate Report
+                </button>
+                <button class="backup-btn" id="backupBtn" >
+                    <i class="fas fa-cloud-download-alt"></i> Backup
+                </button>
+            </div>
+        </header>
+
+        <section class="dashboard">
+            <div class="card income-card">
+                <h2><i class="fas fa-arrow-down"></i> Total Income</h2>
+                <div class="value"><span>$</span><span id="totalIncome">0.00</span></div>
+            </div>
+            <div class="card expense-card">
+                <h2><i class="fas fa-arrow-up"></i> Total Expenses</h2>
+                <div class="value"><span>$</span><span id="totalExpenses">0.00</span></div>
+            </div>
+            <div class="card savings-card">
+                <h2><i class="fas fa-piggy-bank"></i> Total Savings</h2>
+                <div class="value"><span>$</span><span id="totalSavings">0.00</span></div>
+            </div>
+            <div class="card balance-card">
+                <h2><i class="fas fa-wallet"></i> Remaining Balance</h2>
+                <div class="value"><span>$</span><span id="remainingBalance">0.00</span></div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2><i class="fas fa-plus-circle"></i> Add New Entry</h2>
+            <form id="entryForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="amount"><i class="fas fa-dollar-sign"></i> Amount</label>
+                        <input type="number" id="amount" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="type"><i class="fas fa-exchange-alt"></i> Type</label>
+                        <select id="type" required>
+                            <option value="Expense" selected>Expense</option>
+                            <option value="Income">Income</option>
+                            <option value="Savings">Savings</option>
+                            <option value="Savings-Withdrawal">Savings Withdrawal</option>
+                        </select>
+                    </div>
+                    <div class="form-group main-category-group">
+                        <label for="mainCategory"><i class="fas fa-layer-group"></i> Main Category</label>
+                        <select id="mainCategory">
+                            <option value="">Category</option>
+                            <option value="Zarooriat">Zarooriat</option>
+                            <option value="Khwahishat">Khwahishat</option>
+                            <option value="Seekh">Seekh</option>
+                            <option value="Business">Business</option>
+                            <option value="Achanak">Achanak</option>
+                        </select>
+                    </div>
+                    <div class="form-group sub-category-group">
+                        <label for="subCategory"><i class="fas fa-tag"></i> Sub Category</label>
+                        <select id="subCategory">
+                            <option value="">Sub Category</option>
+                            <option value="Salary">Salary</option>
+                            <option value="Soft Food">Soft Food</option>
+                            <option value="Hard Food">Hard Food</option>
+                            <option value="Home">Home</option>
+                            <option value="Health">Health</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Gadgets">Gadgets</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="date"><i class="fas fa-calendar"></i> Date</label>
+                        <input type="date" id="date" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="note"><i class="fas fa-sticky-note"></i> Note (Optional)</label>
+                    <textarea id="note" placeholder="Add a detailed description..."></textarea>
+                </div>
+                <div class="actions">
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Add Entry
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section class="controls">
+            <div class="filters">
+                <div class="form-group">
+                    <label for="startDate"><i class="fas fa-calendar-alt"></i> From</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="form-group">
+                    <label for="endDate"><i class="fas fa-calendar-alt"></i> To</label>
+                    <input type="date" id="endDate">
+                </div>
+                <div class="form-group">
+                    <label for="filterCategory"><i class="fas fa-filter"></i> Category</label>
+                    <select id="filterCategory">
+                        <option value="">All Categories</option>
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
+                        <option value="Savings">Savings</option>
+                        <option value="Zarooriat">Zarooriat</option>
+                        <option value="Khwahishat">Khwahishat</option>
+                        <option value="Seekh">Seekh</option>
+                        <option value="Business">Business</option>
+                        <option value="Achanak">Achanak</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search entries...">
+                <button class="btn btn-primary" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </section>
+
+        <section class="entries-section">
+            <h2><i class="fas fa-list"></i> Expense & Income Entries</h2>
+            <div class="bulk-actions">
+                <button class="btn btn-danger" id="deleteSelected">
+                    <i class="fas fa-trash"></i> Delete Selected
+                </button>
+            </div>
+            <div class="table-responsive">
+                <table class="entries-table">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-cell"><input type="checkbox" id="selectAllEntries"></th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Main Category</th>
+                            <th>Sub Category</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="entriesList">
+                        <!-- Entries will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="noEntries" class="no-data">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                <h3>No entries yet</h3>
+                <p>Add your first income or expense to get started</p>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination" id="paginationContainer">
+                <!-- Pagination buttons will be added here -->
+            </div>
+        </section>
+
+        <section class="charts-section">
+            <div class="chart-container">
+                <h2><i class="fas fa-chart-bar"></i> Monthly Spending</h2>
+                <div class="chart-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h2><i class="fas fa-chart-pie"></i> Expense by Category</h2>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section class="trash-section">
+            <h2><i class="fas fa-trash"></i> Trash</h2>
+            <button id="toggleTrash" class="trash-toggle">
+                <i class="fas fa-chevron-down"></i> Show Trash
+            </button>
+            <div class="trash-content" id="trashContent">
+                <div class="bulk-actions">
+                    <button class="btn btn-success" id="restoreSelected">
+                        <i class="fas fa-undo"></i> Restore Selected
+                    </button>
+                    <button class="btn btn-danger" id="permanentDeleteSelected">
+                        <i class="fas fa-times"></i> Delete Selected
+                    </button>
+                    <button class="btn btn-warning" id="emptyTrash">
+                        <i class="fas fa-trash-alt"></i> Empty Trash
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="entries-table">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-cell"><input type="checkbox" id="selectAllTrash"></th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Main Category</th>
+                                <th>Sub Category</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trashList">
+                            <!-- Trash items will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="noTrash" class="no-data">
+                    <i class="fas fa-trash-alt" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <h3>Trash is empty</h3>
+                    <p>Deleted items will appear here</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="backup-section">
+            <h2><i class="fas fa-database" #backupBtn></i> Backup & Restore</h2>
+            <div class="backup-actions">
+                <button class="btn btn-success" id="exportData">
+                    <i class="fas fa-file-export"></i> Export to File
+                </button>
+                <button class="btn btn-primary" id="importData">
+                    <i class="fas fa-file-import"></i> Import from File
+                </button>
+                <button class="btn btn-secondary" id="saveToDrive">
+                    <i class="fab fa-google-drive"></i> Save to Google Drive
+                </button>
+            </div>
+            <p style="margin-top: 20px; color: var(--gray); font-size: 0.9rem;">
+                <i class="fas fa-info-circle"></i> Your data is automatically saved using advanced browser storage.
+            </p>
+        </section>
+
+        <footer>
+            <p>Cash Management System v1.1 (Aug 4, 2025) <br> ©Copyright 2025 by I.T. Department of ALQAAB Web Studio by ALQAAB Org_Shahbaz Ali</p>
+        </footer>
+    </div>
+
+    <script>
+        // Database and storage management
+        const DB_NAME = 'ExpenseManagerDB';
+        const DB_VERSION = 1;
+        const STORE_ENTRIES = 'entries';
+        const STORE_TRASH = 'trash';
+        
+        let db = null;
+        let entries = [];
+        let trash = [];
+        let editingId = null;
+        
+        // Pagination variables
+        let currentPage = 1;
+        const entriesPerPage = 20;
+        
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const resetAll = document.getElementById('resetAll');
+        const entryForm = document.getElementById('entryForm');
+        const entriesList = document.getElementById('entriesList');
+        const trashList = document.getElementById('trashList');
+        const noEntries = document.getElementById('noEntries');
+        const noTrash = document.getElementById('noTrash');
+        const toggleTrash = document.getElementById('toggleTrash');
+        const trashContent = document.getElementById('trashContent');
+        const totalIncome = document.getElementById('totalIncome');
+        const totalExpenses = document.getElementById('totalExpenses');
+        const totalSavings = document.getElementById('totalSavings');
+        const remainingBalance = document.getElementById('remainingBalance');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+        const filterCategory = document.getElementById('filterCategory');
+        const categorySelect = document.getElementById('mainCategory');
+        const subCategorySelect = document.getElementById('subCategory');
+        const typeSelect = document.getElementById('type');
+        const exportBtn = document.getElementById('exportData');
+        const importBtn = document.getElementById('importData');
+        const saveToDriveBtn = document.getElementById('saveToDrive');
+        const generateReportBtn = document.getElementById('generateReport');
+        const deleteSelectedBtn = document.getElementById('deleteSelected');
+        const restoreSelectedBtn = document.getElementById('restoreSelected');
+        const permanentDeleteSelectedBtn = document.getElementById('permanentDeleteSelected');
+        const emptyTrashBtn = document.getElementById('emptyTrash');
+        const selectAllEntries = document.getElementById('selectAllEntries');
+        const selectAllTrash = document.getElementById('selectAllTrash');
+        const paginationContainer = document.getElementById('paginationContainer');
+        
+        // Chart variables
+        let barChart, pieChart;
+        
+        // Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = (event) => {
+                    console.error('IndexedDB error:', event.target.error);
+                    // Fallback to localStorage
+                    loadFromLocalStorage();
+                    resolve(false);
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    // Load data from IndexedDB
+                    loadFromIndexedDB().then(() => {
+                        // If IndexedDB is empty but localStorage has data, migrate it
+                        if (entries.length === 0 && trash.length === 0) {
+                            const localEntries = JSON.parse(localStorage.getItem('expenseEntries')) || [];
+                            const localTrash = JSON.parse(localStorage.getItem('expenseTrash')) || [];
+                            
+                            if (localEntries.length > 0 || localTrash.length > 0) {
+                                entries = localEntries;
+                                trash = localTrash;
+                                saveToIndexedDB().then(() => {
+                                    console.log('Data migrated from localStorage to IndexedDB');
+                                    updateDashboard();
+                                    renderEntries();
+                                    renderTrash();
+                                    initCharts();
+                                });
+                            }
+                        }
+                        resolve(true);
+                    });
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    
+                    // Create object stores if they don't exist
+                    if (!db.objectStoreNames.contains(STORE_ENTRIES)) {
+                        const entriesStore = db.createObjectStore(STORE_ENTRIES, { keyPath: 'id' });
+                        entriesStore.createIndex('date', 'date', { unique: false });
+                        entriesStore.createIndex('type', 'type', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains(STORE_TRASH)) {
+                        const trashStore = db.createObjectStore(STORE_TRASH, { keyPath: 'id' });
+                        trashStore.createIndex('date', 'date', { unique: false });
+                    }
+                };
+            });
+        }
+        
+        // Load data from IndexedDB
+        async function loadFromIndexedDB() {
+            if (!db) return;
+            
+            try {
+                const tx = db.transaction([STORE_ENTRIES, STORE_TRASH], 'readonly');
+                const entriesStore = tx.objectStore(STORE_ENTRIES);
+                const trashStore = tx.objectStore(STORE_TRASH);
+                
+                const entriesRequest = entriesStore.getAll();
+                const trashRequest = trashStore.getAll();
+                
+                entries = await new Promise((resolve) => {
+                    entriesRequest.onsuccess = () => resolve(entriesRequest.result);
+                    entriesRequest.onerror = () => resolve([]);
+                });
+                
+                trash = await new Promise((resolve) => {
+                    trashRequest.onsuccess = () => resolve(trashRequest.result);
+                    trashRequest.onerror = () => resolve([]);
+                });
+                
+                // Sync with localStorage as backup
+                localStorage.setItem('expenseEntries', JSON.stringify(entries));
+                localStorage.setItem('expenseTrash', JSON.stringify(trash));
+                
+            } catch (error) {
+                console.error('Error loading from IndexedDB:', error);
+                loadFromLocalStorage();
+            }
+        }
+        
+        // Load data from localStorage (fallback)
+        function loadFromLocalStorage() {
+            entries = JSON.parse(localStorage.getItem('expenseEntries')) || [];
+            trash = JSON.parse(localStorage.getItem('expenseTrash')) || [];
+        }
+        
+        // Save data to IndexedDB
+        async function saveToIndexedDB() {
+            if (!db) {
+                // Fallback to localStorage
+                saveToLocalStorage();
+                return;
+            }
+            
+            try {
+                const tx = db.transaction([STORE_ENTRIES, STORE_TRASH], 'readwrite');
+                const entriesStore = tx.objectStore(STORE_ENTRIES);
+                const trashStore = tx.objectStore(STORE_TRASH);
+                
+                // Clear existing data
+                entriesStore.clear();
+                trashStore.clear();
+                
+                // Add all entries
+                for (const entry of entries) {
+                    entriesStore.add(entry);
+                }
+                
+                // Add all trash items
+                for (const item of trash) {
+                    trashStore.add(item);
+                }
+                
+                // Also save to localStorage as backup
+                saveToLocalStorage();
+                
+            } catch (error) {
+                console.error('Error saving to IndexedDB:', error);
+                saveToLocalStorage();
+            }
+        }
+        
+        // Save data to localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('expenseEntries', JSON.stringify(entries));
+            localStorage.setItem('expenseTrash', JSON.stringify(trash));
+        }
+        
+        // Combined save function
+        async function saveData() {
+            await saveToIndexedDB();
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            
+            // Set default type to Expense
+            typeSelect.value = 'Expense';
+            
+            // Set theme based on preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+            
+            // Initialize IndexedDB
+            await initDB();
+            
+            // Load entries and update UI
+            updateDashboard();
+            renderEntries();
+            renderTrash();
+            initCharts();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Add sample data for first-time users if no data exists
+            if (entries.length === 0 && trash.length === 0) {
+                addSampleData();
+            }
+        });
+        
+        function setupEventListeners() {
+            // Theme toggle
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // Reset all data
+            resetAll.addEventListener('click', resetAllData);
+            
+            // Form submission
+            entryForm.addEventListener('submit', handleFormSubmit);
+            
+            // Toggle trash visibility
+            toggleTrash.addEventListener('click', () => {
+                trashContent.classList.toggle('show');
+                toggleTrash.innerHTML = trashContent.classList.contains('show') ? 
+                    '<i class="fas fa-chevron-up"></i> Hide Trash' : 
+                    '<i class="fas fa-chevron-down"></i> Show Trash';
+            });
+            
+            // Type change handling
+            typeSelect.addEventListener('change', function() {
+                const mainCategoryGroup = document.querySelector('.main-category-group');
+                const subCategoryGroup = document.querySelector('.sub-category-group');
+                
+                if (this.value === 'Income') {
+                    mainCategoryGroup.style.display = 'none';
+                    subCategoryGroup.style.display = 'block';
+                    subCategorySelect.value = 'Salary';
+                    categorySelect.value = '';
+                } else if (this.value === 'Savings' || this.value === 'Savings-Withdrawal') {
+                    mainCategoryGroup.style.display = 'none';
+                    subCategoryGroup.style.display = 'none';
+                    subCategorySelect.value = '';
+                    categorySelect.value = '';
+                } else {
+                    mainCategoryGroup.style.display = 'block';
+                    subCategoryGroup.style.display = 'block';
+                }
+            });
+            
+            // Filtering and search
+            searchBtn.addEventListener('click', () => {
+                currentPage = 1;
+                renderEntries();
+            });
+            searchInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    currentPage = 1;
+                    renderEntries();
+                }
+            });
+            startDate.addEventListener('change', () => {
+                currentPage = 1;
+                renderEntries();
+            });
+            endDate.addEventListener('change', () => {
+                currentPage = 1;
+                renderEntries();
+            });
+            filterCategory.addEventListener('change', () => {
+                currentPage = 1;
+                renderEntries();
+            });
+            
+            // Backup and restore
+            exportBtn.addEventListener('click', exportData);
+            importBtn.addEventListener('click', () => document.getElementById('fileInput')?.click());
+            saveToDriveBtn.addEventListener('click', saveToGoogleDrive);
+            generateReportBtn.addEventListener('click', generateTextReport);
+            
+            // Bulk actions
+            deleteSelectedBtn.addEventListener('click', deleteSelectedEntries);
+            restoreSelectedBtn.addEventListener('click', restoreSelectedEntries);
+            permanentDeleteSelectedBtn.addEventListener('click', permanentDeleteSelectedEntries);
+            emptyTrashBtn.addEventListener('click', emptyTrash);
+            
+            // Select all checkboxes
+            selectAllEntries.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.entry-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+            
+            selectAllTrash.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.trash-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+        
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('darkMode', 'enabled');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                localStorage.setItem('darkMode', null);
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+            
+            // Re-render charts to update colors
+            initCharts();
+        }
+        
+        async function resetAllData() {
+            if (confirm('Are you sure you want to reset ALL data? This cannot be undone.')) {
+                // Clear IndexedDB
+                if (db) {
+                    const tx = db.transaction([STORE_ENTRIES, STORE_TRASH], 'readwrite');
+                    tx.objectStore(STORE_ENTRIES).clear();
+                    tx.objectStore(STORE_TRASH).clear();
+                }
+                
+                // Clear localStorage
+                localStorage.removeItem('expenseEntries');
+                localStorage.removeItem('expenseTrash');
+                
+                entries = [];
+                trash = [];
+                
+                updateDashboard();
+                renderEntries();
+                renderTrash();
+                initCharts();
+                alert('All data has been reset successfully!');
+            }
+        }
+        
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const amount = parseFloat(document.getElementById('amount').value);
+            const mainCategory = document.getElementById('mainCategory').value;
+            const subCategory = document.getElementById('subCategory').value;
+            const type = document.getElementById('type').value;
+            const date = document.getElementById('date').value;
+            const note = document.getElementById('note').value;
+            
+            if (amount <= 0) {
+                alert('Amount must be greater than 0');
+                return;
+            }
+            
+            if (editingId !== null) {
+                // Update existing entry
+                entries = entries.map(entry => {
+                    if (entry.id === editingId) {
+                        return {
+                            ...entry,
+                            amount,
+                            mainCategory: type === 'Income' || type.includes('Savings') ? '' : mainCategory,
+                            subCategory: type === 'Income' ? 'Salary' : (type.includes('Savings') ? '' : subCategory),
+                            type,
+                            date,
+                            note
+                        };
+                    }
+                    return entry;
+                });
+                
+                editingId = null;
+                document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-save"></i> Add Entry';
+            } else {
+                // Create new entry
+                const newEntry = {
+                    id: Date.now(),
+                    amount,
+                    mainCategory: type === 'Income' || type.includes('Savings') ? '' : mainCategory,
+                    subCategory: type === 'Income' ? 'Salary' : (type.includes('Savings') ? '' : subCategory),
+                    type,
+                    date,
+                    note
+                };
+                
+                entries.push(newEntry);
+            }
+            
+            // Save to storage
+            await saveData();
+            
+            // Reset form
+            entryForm.reset();
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            typeSelect.value = 'Expense';
+            
+            // Reset category fields display
+            document.querySelector('.main-category-group').style.display = 'block';
+            document.querySelector('.sub-category-group').style.display = 'block';
+            
+            // Update UI
+            updateDashboard();
+            renderEntries();
+            initCharts();
+        }
+        
+        function updateDashboard() {
+            const income = entries
+                .filter(entry => entry.type === 'Income')
+                .reduce((sum, entry) => sum + entry.amount, 0);
+            
+            const expenses = entries
+                .filter(entry => entry.type === 'Expense')
+                .reduce((sum, entry) => sum + entry.amount, 0);
+            
+            const savings = entries
+                .filter(entry => entry.type === 'Savings')
+                .reduce((sum, entry) => sum + entry.amount, 0);
+            
+            const savingsWithdrawals = entries
+                .filter(entry => entry.type === 'Savings-Withdrawal')
+                .reduce((sum, entry) => sum + entry.amount, 0);
+            
+            const netSavings = savings - savingsWithdrawals;
+            const balance = income - expenses - netSavings;
+            
+            totalIncome.textContent = income.toFixed(2);
+            totalExpenses.textContent = expenses.toFixed(2);
+            totalSavings.textContent = netSavings.toFixed(2);
+            remainingBalance.textContent = balance.toFixed(2);
+        }
+        
+        function renderEntries() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const categoryFilter = filterCategory.value;
+            const startDateFilter = startDate.value;
+            const endDateFilter = endDate.value;
+            
+            // Filter entries
+            let filteredEntries = entries.filter(entry => {
+                const matchesSearch = !searchTerm || 
+                    (entry.note && entry.note.toLowerCase().includes(searchTerm)) ||
+                    entry.mainCategory.toLowerCase().includes(searchTerm) ||
+                    entry.subCategory.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = !categoryFilter || 
+                    entry.type === categoryFilter ||
+                    entry.mainCategory === categoryFilter ||
+                    entry.subCategory === categoryFilter;
+                
+                const matchesDate = (!startDateFilter || entry.date >= startDateFilter) && 
+                                  (!endDateFilter || entry.date <= endDateFilter);
+                
+                return matchesSearch && matchesCategory && matchesDate;
+            });
+            
+            // Sort by date (newest first)
+            filteredEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Calculate pagination
+            const totalPages = Math.ceil(filteredEntries.length / entriesPerPage);
+            const startIndex = (currentPage - 1) * entriesPerPage;
+            const endIndex = Math.min(startIndex + entriesPerPage, filteredEntries.length);
+            const pageEntries = filteredEntries.slice(startIndex, endIndex);
+            
+            // Render pagination controls
+            renderPagination(totalPages);
+            
+            // Update UI
+            if (filteredEntries.length === 0) {
+                entriesList.innerHTML = '';
+                noEntries.style.display = 'block';
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            
+            noEntries.style.display = 'none';
+            entriesList.innerHTML = pageEntries.map(entry => {
+                let typeClass = entry.type.toLowerCase();
+                if (entry.type === 'Savings-Withdrawal') {
+                    typeClass = 'savings';
+                }
+                
+                return `
+                <tr class="${typeClass}-row">
+                    <td class="checkbox-cell"><input type="checkbox" class="entry-checkbox" data-id="${entry.id}"></td>
+                    <td>${formatDate(entry.date)}</td>
+                    <td>${entry.note || 'No description'}</td>
+                    <td>${entry.mainCategory ? `<span class="main-category">${entry.mainCategory}</span>` : '-'}</td>
+                    <td>${entry.subCategory ? `<span class="entry-category category-${entry.subCategory.toLowerCase().replace(' ', '-')}">${entry.subCategory}</span>` : '-'}</td>
+                    <td><span class="type-badge ${typeClass}-badge">${entry.type}</span></td>
+                    <td class="${entry.type === 'Income' ? 'income' : (entry.type === 'Savings-Withdrawal' ? 'income' : 'expense')}">
+                        ${entry.type === 'Income' || entry.type === 'Savings-Withdrawal' ? '+' : '-'}$${entry.amount.toFixed(2)}
+                    </td>
+                    <td class="action-cell">
+                        <button class="action-btn edit-btn" onclick="editEntry(${entry.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteEntry(${entry.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `}).join('');
+            
+            // Reset select all checkbox
+            selectAllEntries.checked = false;
+        }
+        
+        function renderPagination(totalPages) {
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.classList.add('pagination-btn');
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderEntries();
+                }
+            });
+            paginationContainer.appendChild(prevBtn);
+            
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.textContent = i;
+                pageBtn.classList.add('pagination-btn');
+                if (i === currentPage) {
+                    pageBtn.classList.add('active');
+                }
+                pageBtn.addEventListener('click', () => {
+                    currentPage = i;
+                    renderEntries();
+                });
+                paginationContainer.appendChild(pageBtn);
+            }
+            
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.classList.add('pagination-btn');
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderEntries();
+                }
+            });
+            paginationContainer.appendChild(nextBtn);
+        }
+        
+        function renderTrash() {
+            if (trash.length === 0) {
+                trashList.innerHTML = '';
+                noTrash.style.display = 'block';
+                return;
+            }
+            
+            noTrash.style.display = 'none';
+            trashList.innerHTML = trash.map(entry => {
+                let typeClass = entry.type.toLowerCase();
+                if (entry.type === 'Savings-Withdrawal') {
+                    typeClass = 'savings';
+                }
+                
+                return `
+                <tr class="${typeClass}-row">
+                    <td class="checkbox-cell"><input type="checkbox" class="trash-checkbox" data-id="${entry.id}"></td>
+                    <td>${formatDate(entry.date)}</td>
+                    <td>${entry.note || 'No description'}</td>
+                    <td>${entry.mainCategory ? `<span class="main-category">${entry.mainCategory}</span>` : '-'}</td>
+                    <td>${entry.subCategory ? `<span class="entry-category category-${entry.subCategory.toLowerCase().replace(' ', '-')}">${entry.subCategory}</span>` : '-'}</td>
+                    <td><span class="type-badge ${typeClass}-badge">${entry.type}</span></td>
+                    <td class="${entry.type === 'Income' ? 'income' : (entry.type === 'Savings-Withdrawal' ? 'income' : 'expense')}">
+                        ${entry.type === 'Income' || entry.type === 'Savings-Withdrawal' ? '+' : '-'}$${entry.amount.toFixed(2)}
+                    </td>
+                    <td class="action-cell">
+                        <button class="action-btn restore-btn" onclick="restoreEntry(${entry.id})">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="action-btn delete-btn" onclick="permanentDelete(${entry.id})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                </tr>
+            `}).join('');
+            
+            // Reset select all checkbox
+            selectAllTrash.checked = false;
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        function editEntry(id) {
+            const entry = entries.find(entry => entry.id === id);
+            if (!entry) return;
+            
+            // Populate form
+            document.getElementById('amount').value = entry.amount;
+            document.getElementById('mainCategory').value = entry.mainCategory || '';
+            document.getElementById('subCategory').value = entry.subCategory || '';
+            document.getElementById('type').value = entry.type;
+            document.getElementById('date').value = entry.date;
+            document.getElementById('note').value = entry.note || '';
+            
+            // Adjust category fields display based on type
+            const mainCategoryGroup = document.querySelector('.main-category-group');
+            const subCategoryGroup = document.querySelector('.sub-category-group');
+            
+            if (entry.type === 'Income') {
+                mainCategoryGroup.style.display = 'none';
+                subCategoryGroup.style.display = 'block';
+            } else if (entry.type === 'Savings' || entry.type === 'Savings-Withdrawal') {
+                mainCategoryGroup.style.display = 'none';
+                subCategoryGroup.style.display = 'none';
+            } else {
+                mainCategoryGroup.style.display = 'block';
+                subCategoryGroup.style.display = 'block';
+            }
+            
+            // Set editing mode
+            editingId = id;
+            document.querySelector('.btn-primary').innerHTML = '<i class="fas fa-save"></i> Update Entry';
+            
+            // Scroll to form
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        async function deleteEntry(id) {
+            const entryIndex = entries.findIndex(entry => entry.id === id);
+            if (entryIndex === -1) return;
+            
+            // Move to trash
+            const [deletedEntry] = entries.splice(entryIndex, 1);
+            trash.push(deletedEntry);
+            
+            // Save and update UI
+            await saveData();
+            updateDashboard();
+            renderEntries();
+            renderTrash();
+            initCharts();
+        }
+        
+        async function restoreEntry(id) {
+            const entryIndex = trash.findIndex(entry => entry.id === id);
+            if (entryIndex === -1) return;
+            
+            // Move back to entries
+            const [restoredEntry] = trash.splice(entryIndex, 1);
+            entries.push(restoredEntry);
+            
+            // Save and update UI
+            await saveData();
+            updateDashboard();
+            renderEntries();
+            renderTrash();
+            initCharts();
+        }
+        
+        async function permanentDelete(id) {
+            const entryIndex = trash.findIndex(entry => entry.id === id);
+            if (entryIndex === -1) return;
+            
+            // Remove from trash
+            trash.splice(entryIndex, 1);
+            
+            // Save and update UI
+            await saveData();
+            renderTrash();
+        }
+        
+        function initCharts() {
+            // Destroy existing charts if they exist
+            if (barChart) barChart.destroy();
+            if (pieChart) pieChart.destroy();
+            
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const textColor = isDarkMode ? '#f0f0f0' : '#212529';
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+
+            // Prepare data for charts
+            const monthlyData = getMonthlyData();
+            const categoryData = getCategoryData();
+            
+            // Create bar chart for monthly spending
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyData.labels,
+                    datasets: [{
+                        label: 'Income',
+                        data: monthlyData.income,
+                        backgroundColor: '#4cc9f0',
+                        borderColor: '#4cc9f0',
+                        borderWidth: 1
+                    }, {
+                        label: 'Expenses',
+                        data: monthlyData.expenses,
+                        backgroundColor: '#f72585',
+                        borderColor: '#f72585',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: {
+                                color: textColor,
+                                callback: function(value) { return '$' + value; }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: textColor }
+                        }
+                    }
+                }
+            });
+            
+            // Create pie chart for category spending
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            pieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: categoryData.labels,
+                    datasets: [{
+                        data: categoryData.data,
+                        backgroundColor: [
+                            '#fca311', '#e85d04', '#7209b7', '#4361ee', 
+                            '#f72585', '#9d4edd', '#2d9cdb', '#6c757d'
+                        ],
+                        borderWidth: 2,
+                        borderColor: isDarkMode ? '#1e1e1e' : '#f8f9fa',
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: textColor }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': $' + context.raw.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function getMonthlyData() {
+            const months = [];
+            const now = new Date();
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.push(date.toLocaleString('default', { month: 'short', year: 'numeric' }));
+            }
+            
+            const income = new Array(6).fill(0);
+            const expenses = new Array(6).fill(0);
+            
+            entries.forEach(entry => {
+                const entryDate = new Date(entry.date);
+                const monthDiff = (now.getMonth() - entryDate.getMonth()) + 
+                                  (12 * (now.getFullYear() - entryDate.getFullYear()));
+                
+                if (monthDiff >= 0 && monthDiff < 6) {
+                    const index = 5 - monthDiff;
+                    if (entry.type === 'Income') {
+                        income[index] += entry.amount;
+                    } else if (entry.type === 'Expense') {
+                        expenses[index] += entry.amount;
+                    }
+                }
+            });
+            
+            return { labels: months, income, expenses };
+        }
+        
+        function getCategoryData() {
+            const categories = ['Zarooriat', 'Khwahishat', 'Seekh', 'Business', 'Achanak'];
+            const data = new Array(categories.length).fill(0);
+            
+            entries
+                .filter(entry => entry.type === 'Expense' && entry.mainCategory)
+                .forEach(entry => {
+                    const index = categories.indexOf(entry.mainCategory);
+                    if (index !== -1) {
+                        data[index] += entry.amount;
+                    }
+                });
+            
+            return { labels: categories, data };
+        }
+        
+        function exportData() {
+            const data = {
+                entries: entries,
+                trash: trash,
+                lastBackup: new Date().toISOString()
+            };
+            
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "expense_manager_backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            
+            alert('Backup exported successfully!');
+        }
+        
+        function saveToGoogleDrive() {
+            alert('To save to Google Drive:\n1. Click "Export to File" to download your data\n2. Upload the downloaded file to your Google Drive\n\nNote: Direct Google Drive integration requires additional setup.');
+        }
+        
+        function generateTextReport() {
+            let report = "EXPENSE MANAGER - FINANCIAL REPORT\n";
+            report += "=====================================\n\n";
+            report += `Generated: ${new Date().toLocaleString()}\n\n`;
+            
+            // Summary section
+            report += "FINANCIAL SUMMARY\n";
+            report += "-----------------\n";
+            
+            const income = entries
+                .filter(entry => entry.type === 'Income')
+                .reduce((sum, entry) => sum + entry.amount, 0);
+            
+            const expenses = entries
+                .filter(entry => entry.type === 'Expense')
+                .reduce((sum, entry) => sum + entry.amount, 0);
+            
+            const savings = entries
+                .filter(entry => entry.type === 'Savings')
+                .reduce((sum, entry) => sum + entry.amount, 0);
+            
+            const savingsWithdrawals = entries
+                .filter(entry => entry.type === 'Savings-Withdrawal')
+                .reduce((sum, entry) => sum + entry.amount, 0);
+            
+            const netSavings = savings - savingsWithdrawals;
+            const balance = income - expenses - netSavings;
+            
+            report += `Total Income: $${income.toFixed(2)}\n`;
+            report += `Total Expenses: $${expenses.toFixed(2)}\n`;
+            report += `Total Savings: $${netSavings.toFixed(2)}\n`;
+            report += `Remaining Balance: $${balance.toFixed(2)}\n\n`;
+            
+            // Category-wise breakdown
+            report += "EXPENSE BY MAIN CATEGORY\n";
+            report += "------------------------\n";
+            
+            const mainCategories = ['Zarooriat', 'Khwahishat', 'Seekh', 'Business', 'Achanak'];
+            mainCategories.forEach(category => {
+                const total = entries
+                    .filter(entry => entry.type === 'Expense' && entry.mainCategory === category)
+                    .reduce((sum, entry) => sum + entry.amount, 0);
+                
+                if (total > 0) {
+                    const percentage = expenses > 0 ? ((total / expenses) * 100).toFixed(1) : '0.0';
+                    report += `${category}: $${total.toFixed(2)} (${percentage}%)\n`;
+                }
+            });
+            
+            // Recent transactions
+            report += "\nRECENT TRANSACTIONS (Last 20)\n";
+            report += "----------------------------\n";
+            
+            const recentEntries = [...entries]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 20);
+            
+            recentEntries.forEach(entry => {
+                const date = new Date(entry.date).toLocaleDateString();
+                const sign = entry.type === 'Income' || entry.type === 'Savings-Withdrawal' ? '+' : '-';
+                report += `${date} | ${entry.type.padEnd(8)} | ${sign}$${entry.amount.toFixed(2).padStart(10)} | ${entry.mainCategory || '-'} | ${entry.subCategory || '-'} | ${entry.note || ''}\n`;
+            });
+            
+            // Monthly breakdown
+            report += "\nMONTHLY BREAKDOWN (Last 6 Months)\n";
+            report += "---------------------------------\n";
+            
+            const monthlyData = getMonthlyData();
+            monthlyData.labels.forEach((month, index) => {
+                report += `${month}: Income: $${monthlyData.income[index].toFixed(2)}, Expenses: $${monthlyData.expenses[index].toFixed(2)}\n`;
+            });
+            
+            // Savings details
+            report += "\nSAVINGS DETAILS\n";
+            report += "--------------\n";
+            report += `Total Deposits: $${savings.toFixed(2)}\n`;
+            report += `Total Withdrawals: $${savingsWithdrawals.toFixed(2)}\n`;
+            report += `Net Savings: $${netSavings.toFixed(2)}\n\n`;
+            
+            report += "=====================================\n";
+            report += "End of Report\n";
+            
+            // Download as .txt file
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `expense_report_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        async function deleteSelectedEntries() {
+            const checkboxes = document.querySelectorAll('.entry-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Please select at least one entry to delete.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${checkboxes.length} selected entries?`)) {
+                for (const checkbox of checkboxes) {
+                    const id = parseInt(checkbox.dataset.id);
+                    await deleteEntry(id);
+                }
+            }
+        }
+        
+        async function restoreSelectedEntries() {
+            const checkboxes = document.querySelectorAll('.trash-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Please select at least one entry to restore.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to restore ${checkboxes.length} selected entries?`)) {
+                for (const checkbox of checkboxes) {
+                    const id = parseInt(checkbox.dataset.id);
+                    await restoreEntry(id);
+                }
+            }
+        }
+        
+        async function permanentDeleteSelectedEntries() {
+            const checkboxes = document.querySelectorAll('.trash-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Please select at least one entry to permanently delete.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to permanently delete ${checkboxes.length} selected entries? This cannot be undone.`)) {
+                for (const checkbox of checkboxes) {
+                    const id = parseInt(checkbox.dataset.id);
+                    await permanentDelete(id);
+                }
+            }
+        }
+        
+        async function emptyTrash() {
+            if (trash.length === 0) {
+                alert('Trash is already empty!');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to permanently delete ALL items in the trash? This cannot be undone.')) {
+                trash = [];
+                await saveData();
+                renderTrash();
+                alert('Trash has been emptied successfully!');
+            }
+        }
+        
+        function addSampleData() {
+            const today = new Date();
+            const lastMonth = new Date(today);
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            
+            entries = [
+                { id: 1, amount: 5000, mainCategory: '', subCategory: 'Salary', type: 'Income', date: today.toISOString().split('T')[0], note: 'Monthly Salary' },
+                { id: 2, amount: 1800, mainCategory: 'Zarooriat', subCategory: 'Home', type: 'Expense', date: today.toISOString().split('T')[0], note: 'Apartment Rent' },
+                { id: 3, amount: 350, mainCategory: 'Zarooriat', subCategory: 'Soft Food', type: 'Expense', date: today.toISOString().split('T')[0], note: 'Groceries' },
+                { id: 4, amount: 250, mainCategory: 'Khwahishat', subCategory: 'Hard Food', type: 'Expense', date: today.toISOString().split('T')[0], note: 'Restaurant' },
+                { id: 5, amount: 150, mainCategory: 'Zarooriat', subCategory: 'Transport', type: 'Expense', date: lastMonth.toISOString().split('T')[0], note: 'Gas and Parking' },
+                { id: 6, amount: 200, mainCategory: 'Khwahishat', subCategory: 'Entertainment', type: 'Expense', date: lastMonth.toISOString().split('T')[0], note: 'Movies and Dining' },
+                { id: 7, amount: 120, mainCategory: 'Zarooriat', subCategory: 'Health', type: 'Expense', date: lastMonth.toISOString().split('T')[0], note: 'Medicines' },
+                { id: 8, amount: 450, mainCategory: 'Khwahishat', subCategory: 'Gadgets', type: 'Expense', date: lastMonth.toISOString().split('T')[0], note: 'Phone Accessories' },
+                { id: 9, amount: 1000, mainCategory: '', subCategory: '', type: 'Savings', date: today.toISOString().split('T')[0], note: 'Monthly Savings Deposit' }
+            ];
+            
+            saveData();
+            updateDashboard();
+            renderEntries();
+            renderTrash();
+            initCharts();
+        }
+        
+        // Create file input for import
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.json';
+        fileInput.style.display = 'none';
+        fileInput.id = 'fileInput';
+        fileInput.addEventListener('change', async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data.entries && data.trash) {
+                        entries = data.entries;
+                        trash = data.trash;
+                        await saveData();
+                        updateDashboard();
+                        renderEntries();
+                        renderTrash();
+                        initCharts();
+                        alert('Data imported successfully!');
+                    } else {
+                        alert('Invalid backup file format.');
+                    }
+                } catch (error) {
+                    alert('Error reading backup file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        });
+        document.body.appendChild(fileInput);
+
+        document.getElementById("backupBtn").addEventListener("click", function () {
+        document.querySelector(".backup-section").scrollIntoView({
+            behavior: "smooth"
+        });
+        });
+    </script>
+</body>
+</html>
